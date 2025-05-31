@@ -17,7 +17,7 @@ func (app *application) logError(r *http.Request, err error) {
 }
 
 func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, status int, message any) {
-    env := envelope{"error": message}
+    env := Envelope{"error": message}
 
     // Write the response using the writeJSON() helper. If this happens to return an
     // error then log it, and fall back to sending the client an empty response with a
@@ -48,4 +48,12 @@ func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request)
 func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
     message := fmt.Sprintf("the %s method is not supported for this resource", r.Method)
     app.errorResponse(w, r, http.StatusMethodNotAllowed, message)
+}
+
+func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+    app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+}
+
+func (app *application) failedValidationResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
+    app.errorResponse(w, r, http.StatusUnprocessableEntity, errors)
 }
